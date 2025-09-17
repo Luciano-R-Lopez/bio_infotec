@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bio-InfoAPP - Monitoreo de Biodigestores</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: left;
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card h2 {
+            color: #00796b;
+        }
+        .card p {
+            color: #333;
+        }
+        .card a {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #00796b;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .card a:hover {
+            background-color: #004d40;
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Header con navegación -->
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">Sensores</a></li>
+                <li><a href="calendario.html">Calendario</a></li>
+                <li><a href="info.html" class="active">Información</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <h1>Bio-InfoAPP - Sector de Información</h1>
+    <p>Gestión de sensores, calendario de eventos y detalles técnicos del Bio-InfoMonitor.</p>
+
+    <div class="container">
+        <!-- Sección de Sensores -->
+        <div class="card">
+            <h2>Sensores del Bio-InfoMonitor</h2>
+            <p>El sistema Bio-InfoMonitor utiliza múltiples sensores integrados para medir los parámetros clave del biodigestor. Entre ellos:</p>
+            <ul>
+                <li><strong>Sensor DHT11:</strong> Mide la humedad y temperatura ambiente.</li>
+                <li><strong>Sensor DS18B20:</strong> Mide la temperatura del líquido dentro del biodigestor.</li>
+                <li><strong>Sensor de Caudal YF-S401:</strong> Mide el flujo del biogás producido.</li>
+            </ul>
+            <a href="#">Ver detalles técnicos</a>
+        </div>
+
+        <!-- Sección del Calendario -->
+        <div class="card">
+            <h2>Calendario de Eventos</h2>
+            <p>El calendario permite agendar eventos relacionados con el mantenimiento y monitoreo del biodigestor. Puedes seleccionar fechas importantes como:</p>
+            <ul>
+                <li>Mantenimiento de sensores.</li>
+                <li>Verificación de producción de biogás.</li>
+                <li>Control de calidad del biogás.</li>
+            </ul>
+            <p>Asegúrate de programar revisiones regulares para optimizar la producción de biogás.</p>
+            <a href="#">Acceder al calendario</a>
+        </div>
+
+        <!-- Sección de Información Técnica -->
+        <div class="card">
+            <h2>Información Técnica</h2>
+            <p>Conoce más sobre el funcionamiento del biodigestor y el sistema de monitoreo:</p>
+            <ul>
+                <li><strong>Bio-InfoGestor:</strong> Biodigestor diseñado para optimizar la producción de biogás.</li>
+                <li><strong>Monitorización:</strong> El Bio-InfoMonitor registra datos en tiempo real sobre la operación del biodigestor.</li>
+                <li><strong>Bio-InfoAPP:</strong> La aplicación móvil te permite acceder a los datos desde cualquier lugar.</li>
+            </ul>
+            <p>Explora las especificaciones técnicas para un uso eficiente de la tecnología en energías renovables.</p>
+            <a href="#">Más información</a>
+        </div>
+    </div>
+
+</body>
+</html>

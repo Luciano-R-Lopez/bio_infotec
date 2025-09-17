@@ -1,0 +1,96 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor de Biodigestor</title>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-database-compat.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .data-card {
+            margin: 15px 0;
+            padding: 20px;
+            background-color: #ffffff; /* Fondo blanco para las tarjetas */
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+        .data-card p {
+            font-size: 1.1em;
+            color: #00796b; /* Color de texto de las tarjetas */
+            margin: 10px 0;
+        }
+        .data-card strong {
+            color: #003a30;  /* Color fuerte para etiquetas */
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Header con navegación -->
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html" class="active">Sensores</a></li>
+                <li><a href="calendario.html">Calendario</a></li>
+                <li><a href="info.html">Información</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="container">
+        <h1>Monitor de Biodigestor</h1>
+        <div class="data-card sensor-data">
+            <p><strong>Humedad:</strong> <span id="humidity">Cargando...</span> %</p>
+            <p><strong>Temperatura Ambiente:</strong> <span id="temperature_dht11">Cargando...</span> °C</p>
+            <p><strong>Temperatura de Liquido:</strong> <span id="temperature_ds18b20">Cargando...</span> °C</p>
+            <p><strong>Caudal de biogás:</strong> <span id="flow_rate">Cargando...</span> L/min</p>
+        </div>
+    </div>
+
+    <script>
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCYodt0R99pMLcQE68xmtpcarRXVge07Fk",
+            authDomain: "bio-infoapp-0001.firebaseapp.com",
+            databaseURL: "https://bio-infoapp-0001-default-rtdb.firebaseio.com/",
+            projectId: "bio-infoapp-0001",
+            storageBucket: "bio-infoapp-0001.appspot.com",
+            messagingSenderId: "1061470789166",
+            appId: "1:1061470789166:web:3dcef2b45e2251a684c9bf",
+        };
+
+        // Inicializar Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Función para obtener los datos de sensores del ESP32
+        async function fetchData() {
+            try {
+                const response = await fetch('http://10.0.2.133/api/data'); // Cambia la IP por la dirección IP de tu ESP32
+                if (!response.ok) throw new Error('Error en la respuesta del servidor');
+                const data = await response.json();
+
+                document.getElementById('humidity').textContent = data.humidity;
+                document.getElementById('temperature_dht11').textContent = data.temperature_dht11;
+                document.getElementById('temperature_ds18b20').textContent = data.temperature_ds18b20;
+                document.getElementById('flow_rate').textContent = data.flow_rate;
+            } catch (error) {
+                console.error("Error al obtener los datos:", error);
+
+            }
+        }
+
+        setInterval(fetchData, 5000);
+        fetchData();
+    </script>
+</body>
+</html>

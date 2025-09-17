@@ -1,0 +1,77 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f4f8;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+}
+h1,h2 {
+    color: #00796b;
+    margin-bottom: 20px;
+}
+/* Estilos del Header y la barra de navegación */
+header {
+    background-color: #004d40;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    padding: 15px 0;
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+nav ul li {
+    margin: 0 20px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    padding: 10px 20px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+nav ul li a:hover {
+    background-color: #00796b;
+    color: #fff;
+    border-radius: 5px;
+}
+
+nav ul li a.active {
+    background-color: #26a69a;
+    color: white;
+    border-radius: 5px;
+}
+
+/* Estilos del contenido para ajustarse con el header fijo */
+body {
+    padding-top: 80px; /* Compensar el header fijo */
+}
+/* Responsive */
+@media (max-width: 600px) {
+    header {
+        padding: 20px;
+    }
+
+    nav ul {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    nav ul li {
+        display: block;
+    }
+}

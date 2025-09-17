@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autenticación y Gestión de Dispositivos</title>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-database-compat.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .form-container, .calendar-container, .notes-container, .device-container {
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff; /* Fondo blanco para las tarjetas */
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        input, select, textarea {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #003a30; /* Borde suave */
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #00796b; /* Color de botón */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .notes-list {
+            text-align: left;
+            margin-top: 20px;
+        }
+        .notes-list p {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header con navegación -->
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">Sensores</a></li>
+                <li><a href="calendario.html" class="active">Calendario</a></li>
+                <li><a href="info.html">Información</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1>Calendario</h1>
+        <h2>Autenticación, Dispositivos y Notas</h2>
+
+        <!-- Formulario de Registro e Inicio de Sesión -->
+        <div class="form-container">
+            <h2>Registrarse</h2>
+            <input type="email" id="registerEmail" placeholder="Correo electrónico">
+            <input type="password" id="registerPassword" placeholder="Contraseña">
+            <button onclick="registerUser()">Registrarse</button>
+            <p id="registerMessage"></p>
+
+            <h2>Iniciar Sesión</h2>
+            <input type="email" id="loginEmail" placeholder="Correo electrónico">
+            <input type="password" id="loginPassword" placeholder="Contraseña">
+            <button onclick="loginUser()">Iniciar Sesión</button>
+            <p id="loginMessage"></p>
+        </div>
+
+        <!-- Apartado para añadir un nuevo dispositivo -->
+        <div class="device-container" style="display:none;">
+            <h2>Agregar un Nuevo Dispositivo</h2>
+            <input type="text" id="newDeviceName" placeholder="Nombre del dispositivo">
+            <button onclick="addDevice()">Agregar Dispositivo</button>
+            <p id="deviceMessage"></p>
+        </div>
+
+        <!-- Apartado de Calendario para añadir notas -->
+        <div class="calendar-container" style="display:none;">
+            <h2>Seleccionar Dispositivo y Fecha</h2>
+            <label for="deviceSelect">Selecciona el dispositivo:</label>
+            <select id="deviceSelect"></select>
+            <br>
+            <label for="dateInput">Selecciona la fecha:</label>
+            <input type="date" id="dateInput">
+            <br>
+            <label for="noteInput">Ingresa una nota:</label>
+            <textarea id="noteInput" rows="4" placeholder="Ingresa los detalles..."></textarea>
+            <br>
+            <button onclick="saveNote()">Guardar Nota</button>
+            <p id="calendarMessage"></p>
+        </div>
+
+        <!-- Apartado para mostrar las notas guardadas -->
+        <div class="notes-container" style="display:none;">
+            <h2>Mostrar Notas Guardadas</h2>
+            <label for="deviceSelectNotes">Selecciona el dispositivo:</label>
+            <select id="deviceSelectNotes"></select>
+
+            <button onclick="loadNotes()">Cargar Notas</button>
+            
+            <div class="notes-list" id="notesList"></div>
+        </div>
+    </div>
+
+    <script>
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCYodt0R99pMLcQE68xmtpcarRXVge07Fk",
+            authDomain: "bio-infoapp-0001.firebaseapp.com",
+            databaseURL: "https://bio-infoapp-0001-default-rtdb.firebaseio.com/",
+            projectId: "bio-infoapp-0001",
+            storageBucket: "bio-infoapp-0001.appspot.com",
+            messagingSenderId: "1061470789166",
+            appId: "1:1061470789166:web:3dcef2b45e2251a684c9bf",
+        };
+
+        // Inicializar Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Función para registrar nuevos usuarios
+        function registerUser() {
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+
+            firebase.auth().createUserWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                // Usuario registrado
+                const user = userCredential.user;
+                document.getElementById('registerMessage').textContent = "Usuario registrado con éxito";
+
+                // Guardar los datos básicos del usuario en la base de datos
+                db.ref('usuarios/' + user.uid).set({
+                    email: user.email
+                });
+            })
+            .catch((error) => {
+                document.getElementById('registerMessage').textContent = "Error: " + error.message;
+            });
+        }
+
+        // Función para iniciar sesión
+        function loginUser() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            firebase.auth().signInWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                // Usuario autenticado
+                const user = userCredential.user;
+                document.getElementById('loginMessage').textContent = "Inicio de sesión exitoso";
+
+                // Mostrar las secciones de dispositivos, calendario y notas
+                document.querySelector('.form-container').style.display = 'none';
+                document.querySelector('.device-container').style.display = 'block';
+                document.querySelector('.calendar-container').style.display = 'block';
+                document.querySelector('.notes-container').style.display = 'block';
+
+                // Cargar los dispositivos del usuario
+                loadUserDevices(user.uid);
+            })
+            .catch((error) => {
+                document.getElementById('loginMessage').textContent = "Error: " + error.message;
+            });
+        }
+
+        // Función para cargar los dispositivos del usuario autenticado
+        function loadUserDevices(userId) {
+            const userDevicesRef = db.ref('usuarios/' + userId + '/dispositivos');
+            
+            userDevicesRef.once('value', snapshot => {
+                const devices = snapshot.val();
+                if (devices) {
+                    // Poblamos el selector de dispositivos con los dispositivos del usuario
+                    const deviceSelect = document.getElementById('deviceSelect');
+                    const deviceSelectNotes = document.getElementById('deviceSelectNotes');
+                    deviceSelect.innerHTML = '';  // Limpiamos opciones previas
+                    deviceSelectNotes.innerHTML = '';  // Limpiamos opciones previas
+
+                    for (const deviceKey in devices) {
+                        const option = document.createElement('option');
+                        option.value = deviceKey;
+                        option.textContent = deviceKey;
+                        deviceSelect.appendChild(option);
+                        deviceSelectNotes.appendChild(option.cloneNode(true)); // Para el selector de notas
+                    }
+                }
+            });
+        }
+
+        // Función para agregar un nuevo dispositivo
+        function addDevice() {
+            const user = firebase.auth().currentUser;  // Obtenemos el usuario autenticado
+            const newDeviceName = document.getElementById('newDeviceName').value;  // Nombre del nuevo dispositivo
+
+            if (newDeviceName && user) {
+                const devicePath = `usuarios/${user.uid}/dispositivos/${newDeviceName}`;
+                db.ref(devicePath).set({
+                    MAC: "Nueva-MAC"
+                }, (error) => {
+                    if (error) {
+                        document.getElementById('deviceMessage').textContent = "Error al agregar el dispositivo";
+                    } else {
+                        document.getElementById('deviceMessage').textContent = "Dispositivo agregado correctamente";
+                        loadUserDevices(user.uid);  // Recargar la lista de dispositivos
+                    }
+                });
+            } else {
+                document.getElementById('deviceMessage').textContent = "Por favor ingresa un nombre para el dispositivo";
+            }
+        }
+
+        // Función para guardar la nota
+        function saveNote() {
+            const user = firebase.auth().currentUser;  // Obtenemos el usuario autenticado
+            const selectedDevice = document.getElementById('deviceSelect').value;
+            const selectedDate = document.getElementById('dateInput').value;
+            const note = document.getElementById('noteInput').value;
+
+            if (selectedDate && note && selectedDevice && user) {
+                const notePath = `usuarios/${user.uid}/dispositivos/${selectedDevice}/Notas/${selectedDate}`;
+                db.ref(notePath).set(note, (error) => {
+                    if (error) {
+                        document.getElementById('calendarMessage').textContent = "Error al guardar la nota";
+                    } else {
+                        document.getElementById('calendarMessage').textContent = "Nota guardada correctamente";
+                    }
+                });
+            } else {
+                document.getElementById('calendarMessage').textContent = "Por favor selecciona un dispositivo, fecha y escribe una nota";
+            }
+        }
+
+        // Función para cargar y mostrar las notas guardadas
+        function loadNotes() {
+            const user = firebase.auth().currentUser;  // Obtenemos el usuario autenticado
+            const selectedDevice = document.getElementById('deviceSelectNotes').value;
+            const notesPath = `usuarios/${user.uid}/dispositivos/${selectedDevice}/Notas`;
+
+            db.ref(notesPath).once('value', snapshot => {
+                const notes = snapshot.val();
+                const notesList = document.getElementById('notesList');
+                notesList.innerHTML = ''; // Limpiar la lista anterior
+                
+                if (notes) {
+                    for (const date in notes) {
+                        const noteText = notes[date];
+                        const noteElement = document.createElement('p');
+                        noteElement.textContent = `${date}: ${noteText}`;
+                        notesList.appendChild(noteElement);
+                    }
+                } else {
+                    notesList.textContent = "No hay notas guardadas para este dispositivo.";
+                }
+            });
+        }
+    </script>
+</body>
+</html>
